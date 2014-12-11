@@ -40,6 +40,11 @@ print recv1
 password = getpass() #password you use for gmail login
 clientSocket.send(b64encode(password) + "\r\n")
 recv1 = clientSocket.recv(1024)
+
+if recv1[:3] == "535":
+    print "Hey idiot! You didn't enter your stuff right! Now we have to start over!"
+    exit()
+
 print recv1
 
 #prepare email message
@@ -47,12 +52,8 @@ clientSocket.send("MAIL FROM: <" + username + ">\r\n")
 recv1 = clientSocket.recv(1024)
 print recv1
 
-#multiple recipients
-clientSocket.send("RCPT TO: <miriye@csumb.edu>\r\n")
-recv1 = clientSocket.recv(1024)
-print recv1
-
-clientSocket.send("RCPT TO: <micah@makethewebwork.com>\r\n")
+recipient = raw_input("who is this to? ")
+clientSocket.send("RCPT TO: <" + recipient + ">\r\n")
 recv1 = clientSocket.recv(1024)
 print recv1
 
@@ -61,12 +62,13 @@ recv1 = clientSocket.recv(1024)
 print recv1
 
 msg  = "from: " + whoareyou + " <" + username + ">\r\n"
-msg += "to: Micah Iriye <miriye@csumb.edu>, Micah Iriye <micah@makethewebwork.com>\r\n"
+msg += "to: <" + recipient + ">\r\n"
 msg += "subject: Testing email from python\r\n"
 msg += "Mime-Version: 1.0;\r\n"
 msg += "Content-Type: text/html; charset=\"ISO-8859-1\";\r\n"
 msg += "Content-Transfer-Encoding: 7bit;\r\n"
-msg += "this is the body of the message. <strong>WITH HTML</strong>. <em>Yippee!</em>\r\n"
+msg += raw_input("Say what you ned to say: ")
+msg += "\r\n"
 endmsg = "\r\n.\r\n"
 
 clientSocket.send(msg)
@@ -75,3 +77,5 @@ clientSocket.send(endmsg)
 clientSocket.send("QUIT\r\n");
 recv1 = clientSocket.recv(1024)
 print recv1
+
+clientSocket.close()
